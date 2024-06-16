@@ -31,10 +31,14 @@ class EstudianteController extends Controller
      */
     public function store(Request $request)
     {
-        // return $request->all(); con esto devuelvo toda la información
+
         $course = new Estudiante();
-        $course->nombre = $request->input('nombre y apellido');
+        $course->nombre = $request->input('nombre');
         $course->interes = $request->input('interes');
+
+        if ($request->hasFile('imagen')){
+            $course->imagen = $request->file('imagen')->store('public/estudiantes');
+        }
 
         $course->save();
         return 'Guardado exitoso';
@@ -45,7 +49,8 @@ class EstudianteController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $course = Estudiante::find($id);
+        return view('estudiantes.show', compact('course'));
     }
 
     /**
@@ -53,7 +58,8 @@ class EstudianteController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $course = Estudiante::find($id);
+        return view('estudiantes.edit',compact('course'));
     }
 
     /**
@@ -61,8 +67,15 @@ class EstudianteController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $course = Estudiante::find($id);
+        $course->fill($request->except('imagen'));
+        if ($request->hasFile('imagen')){
+            $course->imagen = $request->file('imagen')->store('public/estudiantes');
+            $course->save();
+            return 'Curso actualizado';
+        }
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -72,3 +85,4 @@ class EstudianteController extends Controller
         //
     }
 }
+

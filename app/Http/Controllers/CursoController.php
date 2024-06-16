@@ -35,6 +35,10 @@ class CursoController extends Controller
         $course->nombre = $request->input('nombre');
         $course->descripcion = $request->input('descripcion');
 
+        if ($request->hasFile('imagen')){ //si desde ese campo viene un archivo hacer:
+            $course->imagen = $request->file('imagen')->store('public/cursos');
+        }
+
         $course->save();
         return 'Guardado exitoso';
     }
@@ -44,7 +48,8 @@ class CursoController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $course = Curso::find($id);
+        return view('cursos.show', compact('course'));
     }
 
     /**
@@ -52,7 +57,8 @@ class CursoController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $course = Curso::find($id);
+        return view('cursos.edit',compact('course'));
     }
 
     /**
@@ -60,7 +66,13 @@ class CursoController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $course = Curso::find($id);
+        $course->fill($request->except('imagen'));
+        if ($request->hasFile('imagen')){
+            $course->imagen = $request->file('imagen')->store('public/cursos');
+            $course->save();
+            return 'Curso actualizado';
+        }
     }
 
     /**
